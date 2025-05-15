@@ -1,0 +1,22 @@
+* {
+    font-family: "Gothic A1", sans-serif;
+}
+a {
+    text-decoration: none;
+}
+ul,
+li {
+    list-style: none;
+}
+
+main {
+    width: 800px;
+    color: #333;
+    margin: 0 auto;
+}
+
+li {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 40px;
+}
