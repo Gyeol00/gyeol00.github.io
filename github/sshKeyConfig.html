@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sshKeyConfig</title>
+</head>
+<style>
+    main {
+        width: 800px;
+        color: #333;
+        margin: 0 auto;
+    }
+
+    li {
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 40px;
+    }
+
+</style>
+<body>
+    <main>
+        <h2>💻 SSH로 깃 계정 여러 개 등록하는 방법</h2>
+        <p>
+            mac에서 기존 계정이 등록된 채로 다른 깃허브 아이디로 clone / add / commit / push를 하면 permission denied 에러가 난다.<br>
+            기존 계정에 새로운 계정의 레포지토에 접근할 권한이 없다는 것이다.<br><br>
+            깃 계정 여러 개 쓰려면 SSH 키를 각각 만들어서 설정 파일에 등록해야 한다.<br>
+            이거 안 하면 git push 할 때마다 계정 꼬이거나 비번 물어봐서 귀찮다. 😅<br><br>
+        </p>
+
+        <h2>github 계정 설정 - SSH로 git 계정 여러개 등록하기</h2>
+        <ol>
+            <li>레포지토리를 만들고 클론까지 한 상황</li>
+            <li>SSH 키 생성하기</li>
+                <p>먼저 계정별로 SSH 키 만들어야 한다. [이메일]은 깃 계정에 맞춰서 넣어줘야 한다. 아래와 같이 해보자.
+                    <hr>
+                    (bash 입력)<br>
+                    예시) ssh-keygen -t ed25519 -C "[이메일]" -f ~/.ssh/id_ed25519_work00<br>
+                    실습) ssh-keygen -t ed25519 -C "[gyeol000726@gmail.com]" -f ~/.ssh/id_ed25519_gyeol00
+                    <hr>
+                </p>
+                <p>위와 같이 하고 나면 아래의 파일이 생긴다.</p>
+                <p>- ~/.ssh/id_ed25519_gyeol00 (비공개 키)<br>
+                    - ~/.ssh/id_ed25519_gyeol00.pub (공개 키)</p>
+            
+            <li>github에 공개 키 등록하기 (공개 키 파일 내용 복사)</li>
+                <p>
+                    <hr>
+                    (bash 입력)<br>
+                    cat ~/.ssh/id_ed25519_gyeol00.pub
+                    <hr>
+                    - GitHub에서 <span style="font-weight: bold;">Settings → SSH and GPG keys → New SSH key</span> 가서 복사한 거 붙여넣기
+                </p>
+            
+            <li>SSH 설정 파일 수정하기</li>
+                <p>
+                    이제 SSH가 계정마다 다른 키를 쓰도록 설정 파일을 수정해줘야 한다.
+                    <hr>
+                    (bash 입력)<br>
+                    nano ~/.ssh/config<br>
+                    <br>
+                    그리고 아래 내용 추가 해주기<br>
+                    # 개인 계정 (gyeol00)<br>
+                    Host github.com-gyeol00<br>
+                    HostName github.com<br>
+                    User git<br>
+                    IdentityFile ~/.ssh/id_ed25519_gyeol00
+                    <hr>
+                </p>
+            
+            <li>깃 원격 주소 설정하기 (프로젝트마다 계정이 다르면 여기서 설정해줘야 함.)</li>
+                <p>
+                    <hr>
+                    👉 개인 프로젝트일 경우, (bash 입력)<br>
+                    git remote set-url origin git@github.com-gyeol00:Gyeol00/your-repo.git<br>
+                    <br>
+                    👉 예시로 팀 프로젝트일 경우, (bash 입력)<br>
+                    git remote set-url origin git@github.com-work00:Work00/your-repo.git
+                    <hr>
+                </p>
+            
+            <li>이부분은 선택적 부분인데, 매번 비번 안 물어보게 하려면 아래 내용 추가해두면 된다.</li>
+                <p>
+                    <hr>
+                    (bash 열기)<br>
+                    - ssh-add ~/.ssh/id_ed25519_gyeol00<br>
+                    - ssh-add ~/.ssh/id_ed25519_work00
+                    <hr>
+                </p>
+            
+            <li>마지막으로 테스트! 🏃</li>
+                <p>
+                    <hr>
+                    (bash 열기)<br>
+                    ssh -T git@github.com-gyeol00<br>
+                    ssh -T git@github.com-work00<br>
+                    <br>
+                    "Hi <username>! You've successfully authenticated, but GitHub does not provide shell access." 나오면 성공! 😎
+                    <hr>
+                </p>
+            
+            
+        </ol>
+    </main>
+</body>
+</html>
